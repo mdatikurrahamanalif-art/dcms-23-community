@@ -78,6 +78,29 @@ style="display:none;width:100px;height:100px;object-fit:cover;border-radius:50%;
 <footer>© 2026 DCMS 23 Community | Made for Students ❤️</footer>
 
 <script>
+const photoFile = document.getElementById('photoFile');
+const photoPreview = document.getElementById('photoPreview');
+
+photoFile.addEventListener('change', function () {
+  const file = photoFile.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('একটি ছবি নির্বাচন করো।');
+    photoFile.value = '';
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('ছবির সাইজ 5 MB-এর কম হতে হবে।');
+    photoFile.value = '';
+    return;
+  }
+
+  photoPreview.src = URL.createObjectURL(file);
+  photoPreview.style.display = 'block';
+});
 document.getElementById('profileForm').addEventListener('submit',function(event){
 event.preventDefault();
 const name=document.getElementById('name').value.trim();

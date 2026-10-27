@@ -52,8 +52,10 @@ Connect with your classmates and build our community.</p>
 <option>Business Studies</option>
 <option>Humanities</option>
 </select>
-<label>Photo URL (ঐচ্ছিক)</label>
-<input id="photo" type="url" placeholder="ছবির লিংক">
+<label>Student Photo</label>
+<input id="photoFile" type="file" accept="image/*">
+<img id="photoPreview" alt="Photo Preview"
+style="display:none;width:100px;height:100px;object-fit:cover;border-radius:50%;">
 <label>Facebook Profile URL (ঐচ্ছিক)</label>
 <input id="facebook" type="url" placeholder="https://www.facebook.com/...">
 <button type="submit">Preview Profile</button>

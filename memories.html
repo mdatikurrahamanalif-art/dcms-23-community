@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCMS-23 Memories Gallery</title>
+<style>
+:root{--bg:#07111f;--panel:#101e32;--mint:#65e6c4;--muted:#b7c7d8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:16px Arial,sans-serif}
+header{padding:28px 16px;text-align:center;background:linear-gradient(135deg,#102b42,#143b3b)}
+header h1{margin:0 0 8px;color:var(--mint)}header p{margin:0;color:var(--muted)}
+main{max-width:1050px;margin:auto;padding:16px}
+section{background:var(--panel);border-radius:14px;padding:16px;margin:16px 0}
+h2{color:var(--mint);margin-top:0}input,textarea,button{font:inherit;width:100%;padding:11px;margin:6px 0;border-radius:8px}
+input,textarea{background:var(--bg);color:white;border:1px solid #34465d}button{background:var(--mint);color:#07111f;border:0;font-weight:bold;cursor:pointer}
+.note{color:var(--muted);font-size:.92rem}.status{color:var(--mint);overflow-wrap:anywhere}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.memory{background:#07111f;border:1px solid #263a50;border-radius:12px;overflow:hidden}.memory img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.body{padding:12px}.body h3{margin:0 0 8px;color:var(--mint)}.caption{white-space:pre-wrap;overflow-wrap:anywhere}.meta{font-size:.82rem;color:var(--muted);margin-top:10px}.actions{display:flex;gap:8px}.actions button{flex:1}.danger{background:#ffb4b4}.hidden{display:none}
+</style>
+</head>
+<body>
+<header><h1>📸 DCMS-23 Memories</h1><p>আমাদের স্কুলজীবনের স্মৃতি, ছবিতে ও গল্পে</p></header>
+<main>
+<section id="submitSection">
+<h2>তোমার স্মৃতি যোগ করো</h2>
+<p class="note">ছবি ও ক্যাপশন জমা দিলে Admin অনুমোদন করার পর গ্যালারিতে প্রকাশ হবে। JPG, PNG বা WebP ছবি; সর্বোচ্চ 5MB। অন্যদের ছবি দেওয়ার আগে অনুমতি নাও।</p>
+<form id="memoryForm">
+<input id="title" maxlength="100" placeholder="স্মৃতির শিরোনাম (যেমন: বিদায় অনুষ্ঠান ২০২৬)" required>
+<textarea id="caption" maxlength="600" rows="4" placeholder="ছবির ক্যাপশন বা স্মৃতির গল্প লিখো..." required></textarea>
+<label for="photo">ছবি নির্বাচন করো</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+<button type="submit">স্মৃতি জমা দাও</button>
+</form>
+<p id="submitStatus" class="status" role="status"></p>
+</section>
+
+<section>
+<h2>🌿 প্রকাশিত স্মৃতি</h2>
+<div id="gallery" class="grid"><p class="note">গ্যালারি লোড হচ্ছে...</p></div>
+</section>
+
+<section id="adminSection" class="hidden">
+<h2>🛡️ Admin Review</h2>
+<p class="note">এখানে অপেক্ষমাণ স্মৃতি Approve অথবা Delete করতে পারবে। Admin access Firebase-এর admins/{uid} ডকুমেন্ট দিয়ে যাচাই করা হয়।</p>
+<div id="pending" class="grid"></div>
+<p id="adminStatus" class="status"></p>
+</section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDGeMNpKYyDYWSgOtWY42MUWVQmmOrv7ug",
+  authDomain: "dcms-23-community.firebaseapp.com",
+  projectId: "dcms-23-community",
+  storageBucket: "dcms-23-community.firebasestorage.app",
+  messagingSenderId: "71029823331",
+  appId: "1:71029823331:web:e58307a6f01aa5bb126556"
+};
+const CLOUDINARY_CLOUD_NAME = "peog4nd0";
+const CLOUDINARY_UPLOAD_PRESET = "dcms23_profiles"; // verify this is an unsigned image upload preset
+
+const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+const $=id=>document.getElementById(id);
+let currentUser=null,isAdmin=false;
+const cleanups=[];
+
+function makeCard(m, admin=false, pending=false) {
+  const article=document.createElement("article"); article.className="memory";
+  const img=document.createElement("img"); img.src=m.imageUrl; img.alt=m.title||"DCMS memory"; img.loading="lazy"; article.append(img);
+  const body=document.createElement("div"); body.className="body"; article.append(body);
+  const h=document.createElement("h3"); h.textContent=m.title||"স্মৃতি"; body.append(h);
+  const p=document.createElement("p"); p.className="caption"; p.textContent=m.caption||""; body.append(p);
+  const meta=document.createElement("div"); meta.className="meta";
+  meta.textContent=(m.senderEmail||"শিক্ষার্থী")+" • "+(m.createdAt?.toDate?m.createdAt.toDate().toLocaleDateString("bn-BD"):"");
+  body.append(meta);
+  if(admin){
+    const actions=document.createElement("div"); actions.className="actions"; body.append(actions);
+    if(pending){
+      const approve=document.createElement("button"); approve.textContent="Approve"; approve.onclick=async()=>{try{await updateDoc(doc(db,"memories",m.id),{status:"approved",approvedBy:currentUser.uid,approvedAt:serverTimestamp()});$("adminStatus").textContent="স্মৃতি অনুমোদিত হয়েছে।"}catch(e){$("adminStatus").textContent=e.message}};actions.append(approve);
+    }
+    const del=document.createElement("button");del.textContent="Delete";del.className="danger";del.onclick=async()=>{if(!confirm("এই স্মৃতিটি মুছে ফেলবে?"))return;try{await deleteDoc(doc(db,"memories",m.id));$("adminStatus").textContent="স্মৃতি মুছে ফেলা হয়েছে।"}catch(e){$("adminStatus").textContent=e.message}};actions.append(del);
+  }
+  return article;
+}
+async function uploadImage(file){
+  if(!file)throw Error("একটি ছবি নির্বাচন করো।");
+  if(file.size>5*1024*1024)throw Error("ছবির সাইজ 5MB-এর কম হতে হবে।");
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type))throw Error("শুধু JPG, PNG বা WebP ছবি দেওয়া যাবে।");
+  const form=new FormData();form.append("file",file);form.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);
+  const response=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,{method:"POST",body:form});
+  const result=await response.json();if(!response.ok)throw Error(result.error?.message||"ছবি আপলোড হয়নি। Cloudinary preset পরীক্ষা করো।");
+  return result.secure_url;
+}
+onAuthStateChanged(auth,async user=>{
+  currentUser=user;
+  if(!user){$("submitStatus").textContent="স্মৃতি জমা দিতে আগে লগইন করো।";$("memoryForm").querySelector("button").disabled=true;$("gallery").replaceChildren();$("gallery").append(Object.assign(document.createElement("p"),{textContent:"প্রকাশিত স্মৃতি দেখতে লগইন করো।"}));return;}
+  $("memoryForm").querySelector("button").disabled=false;
+  try{const adminDoc=await getDoc(doc(db,"admins",user.uid));isAdmin=adminDoc.exists();}catch(e){$("submitStatus").textContent="Role check error: "+e.message;return;}
+  if(isAdmin)$("adminSection").classList.remove("hidden");
+  cleanups.push(onSnapshot(query(collection(db,"memories"),where("status","==","approved"),orderBy("createdAt","desc")),snap=>{
+    const gallery=$("gallery");gallery.replaceChildren();
+    if(snap.empty){gallery.append(Object.assign(document.createElement("p"),{className:"note",textContent:"এখনো কোনো স্মৃতি প্রকাশিত হয়নি।"}));return;}
+    snap.forEach(d=>gallery.append(makeCard({id:d.id,...d.data()})));
+  },e=>$("gallery").textContent="Gallery error: "+e.message));
+  if(isAdmin)cleanups.push(onSnapshot(query(collection(db,"memories"),where("status","==","pending"),orderBy("createdAt","desc")),snap=>{
+    const pending=$("pending");pending.replaceChildren();
+    if(snap.empty){pending.append(Object.assign(document.createElement("p"),{className:"note",textContent:"এখন কোনো pending স্মৃতি নেই।"}));return;}
+    snap.forEach(d=>pending.append(makeCard({id:d.id,...d.data()},true,true)));
+  },e=>$("adminStatus").textContent="Admin review error: "+e.message));
+});
+$("memoryForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!currentUser){$("submitStatus").textContent="আগে লগইন করো।";return;}
+  const button=$("memoryForm").querySelector("button");button.disabled=true;$("submitStatus").textContent="ছবি আপলোড হচ্ছে...";
+  try{
+    const imageUrl=await uploadImage($("photo").files[0]);
+    await addDoc(collection(db,"memories"),{title:$("title").value.trim(),caption:$("caption").value.trim(),imageUrl,ownerUid:currentUser.uid,senderEmail:currentUser.email||"শিক্ষার্থী",status:"pending",createdAt:serverTimestamp()});
+    $("memoryForm").reset();$("submitStatus").textContent="স্মৃতি জমা হয়েছে! Admin অনুমোদন করলে প্রকাশিত হবে।";
+  }catch(err){$("submitStatus").textContent="সমস্যা: "+err.message;}
+  finally{button.disabled=false;}
+});
+</script>
+</body>
+</html>

@@ -1,3 +1,329 @@
-<!doctype html><html lang="bn"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Student Dashboard</title><style>body{background:#07111f;color:white;font:16px Arial;max-width:900px;margin:auto;padding:16px}section,.card{background:#101e32;padding:16px;border-radius:12px;margin:12px 0}h1,h2,h3{color:#65e6c4}input,select,textarea,button{box-sizing:border-box;width:100%;padding:10px;margin:6px 0;border-radius:8px}input,select,textarea{background:#07111f;color:white;border:1px solid #34465d}button{background:#65e6c4;border:0;font-weight:bold}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.photo{width:90px;height:90px;object-fit:cover;border-radius:50%}.status{color:#65e6c4;overflow-wrap:anywhere}a{color:#65e6c4}</style><h1>Student Dashboard 🎓</h1><p id="who"></p><button id="logout">Logout</button><section><h2>My Student Profile</h2><form id="f"><input id="name" placeholder="Full name" maxlength="100" required><input id="roll" placeholder="Roll number" maxlength="30" required><select id="department" required><option value="">Department</option><option>Science</option><option>Business Studies</option><option>Humanities</option></select><input id="birthday" type="date"><label><input id="show" type="checkbox" style="width:auto"> Birthday list-এ দেখাতে সম্মতি</label><input id="facebook" type="url" placeholder="Facebook URL (optional)"><label>Photo (optional, max 5MB)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><button>Save / Update Profile</button></form><p id="status" class="status"></p></section><section><h2>Student Directory</h2><div id="students" class="grid"></div></section><section><h2>Birthdays</h2><div id="birthdays"></div></section><section><h2>Send Birthday Wish</h2><form id="wf"><input id="from" placeholder="তোমার নাম" required maxlength="80"><select id="to" required><option value="">শিক্ষার্থী</option></select><textarea id="text" placeholder="শুভ জন্মদিন!" required maxlength="300"></textarea><button>Send Wish</button></form><p id="ws" class="status"></p><div id="wishes"></div></section><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";import{getFirestore,collection,doc,getDoc,addDoc,setDoc,onSnapshot,query,orderBy,limit,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";const firebaseConfig={apiKey:"AIzaSyDGeMNpKYyDYWSgOtWY42MUWVQmmOrv7ug",authDomain:"dcms-23-community.firebaseapp.com",projectId:"dcms-23-community",storageBucket:"dcms-23-community.firebasestorage.app",messagingSenderId:"71029823331",appId:"1:71029823331:web:e58307a6f01aa5bb126556"};const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=x=>document.getElementById(x),CLOUD="peog4nd0",PRESET="dcms23_profiles";let user,ownId=null,students=[];const stops=[];function text(p,t,v){let e=document.createElement(t);e.textContent=v??"";p.append(e);return e}function card(){let e=document.createElement("div");e.className="card";return e}onAuthStateChanged(auth,async u=>{if(!u){location.replace("index.html");return}user=u;$("who").textContent=u.email;let a=await getDoc(doc(db,"admins",u.uid));if(a.exists()){location.replace("admin.html");return}stops.push(onSnapshot(collection(db,"students"),s=>{students=s.docs.map(d=>({id:d.id,...d.data()}));render();let m=students.find(x=>x.ownerUid===u.uid);if(m&&!ownId){ownId=m.id;for(let k of ["name","roll","department","birthday","facebook"])$(k).value=m[k]||"";$("show").checked=!!m.showBirthday}},e=>$("status").textContent=e.message));stops.push(onSnapshot(query(collection(db,"wishes"),orderBy("createdAt","desc"),limit(100)),s=>{let b=$("wishes");b.replaceChildren();s.forEach(d=>{let w=d.data(),c=card();text(c,"b","🎉 "+w.to);text(c,"p",w.text);text(c,"small","— "+w.from);b.append(c)})},e=>$("ws").textContent=e.message))});function render(){let b=$("students"),sel=$("to");b.replaceChildren();sel.replaceChildren();let o=document.createElement("option");o.value="";o.textContent="শিক্ষার্থী";sel.append(o);students.forEach(s=>{let c=card();if(s.photo){let im=text(c,"img","");im.src=s.photo;im.className="photo"}text(c,"h3",s.name);text(c,"p","Roll: "+s.roll);text(c,"p",s.department);if(s.showBirthday&&s.birthday)text(c,"p","🎂 "+s.birthday);b.append(c);o=document.createElement("option");o.value=s.id;o.textContent=s.name+" (Roll "+s.roll+")";sel.append(o)});let bd=$("birthdays");bd.replaceChildren();students.filter(s=>s.showBirthday&&s.birthday).forEach(s=>text(bd,"p","🎂 "+s.name+" — "+s.birthday))}
-async function upload(f){if(!f)return"";if(f.size>5*1024*1024||!["image/jpeg","image/png","image/webp"].includes(f.type))throw Error("JPG/PNG/WebP, max 5MB");let d=new FormData();d.append("file",f);d.append("upload_preset",PRESET);let r=await fetch("https://api.cloudinary.com/v1_1/"+CLOUD+"/image/upload",{method:"POST",body:d}),j=await r.json();if(!r.ok)throw Error(j.error?.message||"Upload failed");return j.secure_url}
-$("f").onsubmit=async e=>{e.preventDefault();try{let old=students.find(s=>s.id===ownId),photo=await upload($("photo").files[0])||old?.photo||"",data={name:$("name").value.trim(),roll:$("roll").value.trim(),department:$("department").value,birthday:$("birthday").value,showBirthday:$("show").checked,facebook:$("facebook").value.trim(),photo,ownerUid:user.uid,updatedAt:serverTimestamp()};if(data.showBirthday&&!data.birthday)throw Error("Birthday দেখাতে জন্মতারিখ দাও");if(ownId)await setDoc(doc(db,"students",ownId),data,{merge:true});else{data.createdAt=serverTimestamp();ownId=(await addDoc(collection(db,"students"),data)).id} $("status").textContent="Profile saved!"}catch(e){$("status").textContent=e.message}};$("wf").onsubmit=async e=>{e.preventDefault();try{let s=students.find(s=>s.id===$("to").value);if(!s)throw Error("শিক্ষার্থী নির্বাচন করো");await addDoc(collection(db,"wishes"),{from:$("from").value.trim(),to:s.name,recipientId:s.id,text:$("text").value.trim(),senderUid:user.uid,createdAt:serverTimestamp()});$("text").value="";$("ws").textContent="Wish sent!"}catch(e){$("ws").textContent=e.message}};$("logout").onclick=async()=>{stops.forEach(f=>f());await signOut(auth);location.replace("index.html")};</script></html>
+
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCMS 23 Student Dashboard</title>
+<style>
+body{background:#07111f;color:white;font:16px Arial;max-width:900px;margin:auto;padding:16px}
+section,.card{background:#101e32;padding:16px;border-radius:12px;margin:12px 0}
+h1,h2,h3{color:#65e6c4}
+input,select,textarea,button{box-sizing:border-box;width:100%;padding:10px;margin:6px 0;border-radius:8px}
+input,select,textarea{background:#07111f;color:white;border:1px solid #34465d}
+button{background:#65e6c4;color:#07111f;border:0;font-weight:bold;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.photo{width:90px;height:90px;object-fit:cover;border-radius:50%}
+.status{color:#65e6c4;overflow-wrap:anywhere}
+a{color:#65e6c4}
+.fb-link{display:inline-block;margin-top:8px;padding:8px 12px;border:1px solid #65e6c4;border-radius:8px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<h1>Student Dashboard 🎓</h1>
+<p id="who"></p>
+<button id="logout">Logout</button>
+
+<section>
+<h2>My Student Profile</h2>
+<form id="f">
+<input id="name" placeholder="Full name" maxlength="100" required>
+<input id="roll" placeholder="Roll number" maxlength="30" required>
+
+<select id="department" required>
+<option value="">Department</option>
+<option>Science</option>
+<option>Business Studies</option>
+<option>Humanities</option>
+</select>
+
+<input id="birthday" type="date">
+
+<label>
+<input id="show" type="checkbox" style="width:auto">
+Birthday list-এ দেখাতে সম্মতি
+</label>
+
+<label>Facebook Profile Link (optional)</label>
+<input id="facebook" type="url" placeholder="https://www.facebook.com/your.profile">
+
+<label>Photo (optional, max 5MB)</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+
+<button type="submit">Save / Update Profile</button>
+</form>
+<p id="status" class="status"></p>
+</section>
+
+<section>
+<h2>Student Directory</h2>
+<div id="students" class="grid"></div>
+</section>
+
+<section>
+<h2>Birthdays</h2>
+<div id="birthdays"></div>
+</section>
+
+<section>
+<h2>Send Birthday Wish</h2>
+<form id="wf">
+<input id="from" placeholder="তোমার নাম" required maxlength="80">
+<select id="to" required>
+<option value="">শিক্ষার্থী</option>
+</select>
+<textarea id="text" placeholder="শুভ জন্মদিন!" required maxlength="300"></textarea>
+<button type="submit">Send Wish</button>
+</form>
+<p id="ws" class="status"></p>
+<div id="wishes"></div>
+</section>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import{getFirestore,collection,doc,getDoc,addDoc,setDoc,onSnapshot,query,orderBy,limit,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyDGeMNpKYyDYWSgOtWY42MUWVQmmOrv7ug",
+authDomain:"dcms-23-community.firebaseapp.com",
+projectId:"dcms-23-community",
+storageBucket:"dcms-23-community.firebasestorage.app",
+messagingSenderId:"71029823331",
+appId:"1:71029823331:web:e58307a6f01aa5bb126556"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=x=>document.getElementById(x);
+const CLOUD="peog4nd0";
+const PRESET="dcms23_profiles";
+
+let user,ownId=null,students=[];
+const stops=[];
+
+function text(p,t,v){
+let e=document.createElement(t);
+e.textContent=v??"";
+p.append(e);
+return e;
+}
+
+function card(){
+let e=document.createElement("div");
+e.className="card";
+return e;
+}
+
+onAuthStateChanged(auth,async u=>{
+if(!u){
+location.replace("index.html");
+return;
+}
+
+user=u;
+$("who").textContent=u.email;
+
+try{
+let a=await getDoc(doc(db,"admins",u.uid));
+if(a.exists()){
+location.replace("admin.html");
+return;
+}
+}catch(e){
+$("status").textContent="Role check error: "+e.message;
+return;
+}
+
+stops.push(onSnapshot(collection(db,"students"),s=>{
+students=s.docs.map(d=>({id:d.id,...d.data()}));
+render();
+
+let m=students.find(x=>x.ownerUid===u.uid);
+if(m){
+ownId=m.id;
+for(let k of ["name","roll","department","birthday","facebook"]){
+$(k).value=m[k]||"";
+}
+$("show").checked=!!m.showBirthday;
+}
+},e=>$("status").textContent=e.message));
+
+stops.push(onSnapshot(
+query(collection(db,"wishes"),orderBy("createdAt","desc"),limit(100)),
+s=>{
+let b=$("wishes");
+b.replaceChildren();
+s.forEach(d=>{
+let w=d.data(),c=card();
+text(c,"b","🎉 "+w.to);
+text(c,"p",w.text);
+text(c,"small","— "+w.from);
+b.append(c);
+});
+},
+e=>$("ws").textContent=e.message
+));
+});
+
+function render(){
+let b=$("students"),sel=$("to");
+b.replaceChildren();
+sel.replaceChildren();
+
+let o=document.createElement("option");
+o.value="";
+o.textContent="শিক্ষার্থী";
+sel.append(o);
+
+students.forEach(s=>{
+let c=card();
+
+if(s.photo){
+let im=document.createElement("img");
+im.src=s.photo;
+im.alt=s.name+" profile photo";
+im.className="photo";
+c.append(im);
+}
+
+text(c,"h3",s.name);
+text(c,"p","Roll: "+s.roll);
+text(c,"p",s.department);
+
+if(s.showBirthday&&s.birthday){
+text(c,"p","🎂 "+s.birthday);
+}
+
+/* Facebook Profile Link */
+if(s.facebook){
+try{
+const fbUrl=new URL(s.facebook);
+if(fbUrl.protocol==="https:"||fbUrl.protocol==="http:"){
+let fb=document.createElement("a");
+fb.href=fbUrl.href;
+fb.textContent="Facebook Profile ↗";
+fb.target="_blank";
+fb.rel="noopener noreferrer";
+fb.className="fb-link";
+c.append(fb);
+}
+}catch(e){}
+}
+
+b.append(c);
+
+o=document.createElement("option");
+o.value=s.id;
+o.textContent=s.name+" (Roll "+s.roll+")";
+sel.append(o);
+});
+
+let bd=$("birthdays");
+bd.replaceChildren();
+
+students.filter(s=>s.showBirthday&&s.birthday).forEach(s=>{
+text(bd,"p","🎂 "+s.name+" — "+s.birthday);
+});
+}
+
+async function upload(f){
+if(!f)return"";
+
+if(f.size>5*1024*1024||
+!["image/jpeg","image/png","image/webp"].includes(f.type)){
+throw Error("JPG/PNG/WebP, max 5MB");
+}
+
+let d=new FormData();
+d.append("file",f);
+d.append("upload_preset",PRESET);
+
+let r=await fetch(
+"https://api.cloudinary.com/v1_1/"+CLOUD+"/image/upload",
+{method:"POST",body:d}
+);
+
+let j=await r.json();
+if(!r.ok)throw Error(j.error?.message||"Upload failed");
+return j.secure_url;
+}
+
+$("f").onsubmit=async e=>{
+e.preventDefault();
+
+try{
+let old=students.find(s=>s.id===ownId);
+let photo=await upload($("photo").files[0])||old?.photo||"";
+let facebook=$("facebook").value.trim();
+
+if(facebook){
+let u=new URL(facebook);
+if(!["https:","http:"].includes(u.protocol)){
+throw Error("সঠিক Facebook URL দাও");
+}
+}
+
+let data={
+name:$("name").value.trim(),
+roll:$("roll").value.trim(),
+department:$("department").value,
+birthday:$("birthday").value,
+showBirthday:$("show").checked,
+facebook:facebook,
+photo:photo,
+ownerUid:user.uid,
+updatedAt:serverTimestamp()
+};
+
+if(data.showBirthday&&!data.birthday){
+throw Error("Birthday দেখাতে জন্মতারিখ দাও");
+}
+
+if(ownId){
+await setDoc(doc(db,"students",ownId),data,{merge:true});
+}else{
+data.createdAt=serverTimestamp();
+ownId=(await addDoc(collection(db,"students"),data)).id;
+}
+
+$("status").textContent="Profile saved!";
+$("photo").value="";
+}catch(e){
+$("status").textContent=e.message;
+}
+};
+
+$("wf").onsubmit=async e=>{
+e.preventDefault();
+
+try{
+let s=students.find(s=>s.id===$("to").value);
+if(!s)throw Error("শিক্ষার্থী নির্বাচন করো");
+
+await addDoc(collection(db,"wishes"),{
+from:$("from").value.trim(),
+to:s.name,
+recipientId:s.id,
+text:$("text").value.trim(),
+senderUid:user.uid,
+createdAt:serverTimestamp()
+});
+
+$("text").value="";
+$("ws").textContent="Wish sent!";
+}catch(e){
+$("ws").textContent=e.message;
+}
+};
+
+$("logout").onclick=async()=>{
+stops.forEach(f=>f());
+await signOut(auth);
+location.replace("index.html");
+};
+</script>
+</body>
+</html>

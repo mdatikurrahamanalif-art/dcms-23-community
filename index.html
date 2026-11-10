@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCMS Batch '23</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050814;--card:#0d1424;--card2:#111a2e;--line:rgba(255,184,0,.25);--gold:#FFB800;--gold2:#FFD54A;--text:#e9edf5;--muted:#8b96ad}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:50;background:rgba(5,8,20,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;align-items:center;gap:10px;padding:12px 16px;max-width:1100px;margin:auto}
+.logo{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-weight:700;color:var(--gold);font-size:13px;text-align:center;box-shadow:0 0 14px rgba(255,184,0,.35);flex-shrink:0;line-height:1.1}
+.brand h1{font-size:1.15rem;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:.8rem;color:var(--muted)}
+.spacer{flex:1}
+.btn{border:0;border-radius:10px;padding:9px 16px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.95rem;transition:.2s;text-decoration:none;display:inline-block}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#ffa200);color:#111}
+.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-ghost{background:#1a2338;color:var(--text);border:1px solid #2a3556}
+.btn-red{background:rgba(255,77,109,.15);color:#ff8fa3;border:1px solid rgba(255,77,109,.4)}
+.btn-sm{padding:6px 12px;font-size:.85rem}
+nav.menu{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px;max-width:1100px;margin:auto;scrollbar-width:none}
+nav.menu a{white-space:nowrap;text-decoration:none;color:var(--muted);padding:7px 12px;border-radius:999px;font-size:.9rem;border:1px solid #1d2842}
+nav.menu a:hover{color:#111;background:var(--gold);font-weight:600}
+section{padding:56px 0;border-bottom:1px solid #141c30;scroll-margin-top:130px}
+.sec-head{text-align:center;margin-bottom:28px}
+.sec-tag{display:inline-block;font-size:.8rem;color:var(--gold);border:1px solid var(--line);padding:4px 12px;border-radius:999px;margin-bottom:10px}
+.sec-head h2{font-size:clamp(1.5rem,4vw,2.2rem)}
+.sec-head p{color:var(--muted);margin-top:6px}
+.card{background:var(--card);border:1px solid #1d2842;border-radius:16px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.hero{text-align:center;padding:70px 0 50px;background:radial-gradient(circle at 50% 0%,rgba(255,184,0,.18),transparent 60%)}
+.hero .logo{width:120px;height:120px;font-size:26px;margin:0 auto 18px;border-width:3px}
+.hero h2{font-size:clamp(2rem,6vw,3.2rem);font-weight:700}
+.hero h2 span{background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.quote{color:var(--muted);max-width:620px;margin:12px auto 24px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:30px}
+.stat{background:var(--card2);border:1px solid #1d2842;border-radius:14px;padding:16px 8px}
+.stat b{display:block;font-size:1.7rem;color:var(--gold)}
+.stat small{color:var(--muted)}
+input,select,textarea{width:100%;background:#0a1020;border:1px solid #243154;color:var(--text);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:.95rem;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+select option{background:#0a1020}
+label{display:block;font-weight:600;margin:12px 0 6px;font-size:.92rem}
+label small{color:var(--muted);font-weight:400}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.row>*{flex:1;min-width:150px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.chip{background:#141d33;border:1px solid #243154;color:var(--muted);border-radius:999px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:.88rem}
+.chip.on{background:var(--gold);color:#111;border-color:var(--gold);font-weight:600}
+.member{display:flex;gap:12px;align-items:center}
+.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1e2a4a,#2d3d6b);border:1px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-weight:700;flex-shrink:0;font-size:.8rem}
+.badge{display:inline-block;font-size:.75rem;padding:2px 9px;border-radius:999px;background:rgba(255,184,0,.12);color:var(--gold);border:1px solid var(--line)}
+.blood{color:#ff6b81;font-weight:700}
+.muted{color:var(--muted);font-size:.9rem}
+.empty{text-align:center;color:var(--muted);padding:30px;border:1px dashed #243154;border-radius:14px;grid-column:1/-1}
+.gal{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/3;background:linear-gradient(135deg,#17213a,#0d1424);border:1px solid #1d2842}
+.gal img{width:100%;height:100%;object-fit:cover}
+.gal .cap{position:absolute;left:0;right:0;bottom:0;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:.9rem}
+.gal .ph{height:100%;display:grid;place-items:center;color:var(--muted);font-size:2rem}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.cd div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px 6px;text-align:center}
+.cd b{font-size:1.8rem;color:var(--gold);display:block}
+.cd small{color:var(--muted)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:8px;border-bottom:1px solid #1d2842;text-align:left;vertical-align:top}
+th{color:var(--gold)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal.open{display:flex}
+.modal .box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;width:100%;max-width:440px;max-height:92vh;overflow:auto;position:relative}
+.x{position:absolute;right:14px;top:8px;background:none;border:0;color:var(--muted);font-size:1.6rem;cursor:pointer}
+.check{display:flex;gap:10px;align-items:flex-start;background:var(--card2);padding:12px;border-radius:12px;margin-top:14px}
+.check input{width:auto;margin-top:4px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gold);color:#111;padding:10px 18px;border-radius:10px;font-weight:600;display:none;z-index:200;max-width:90%}
+footer{text-align:center;padding:40px 16px;color:var(--muted);font-size:.9rem}
+footer .motto{color:var(--gold);font-weight:700;margin:8px 0}
+.hidden{display:none !important}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.cd{grid-template-columns:repeat(2,1fr)}.brand p{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="logo">DCMS<br>'23</div>
+    <div class="brand"><h1>DCMS BATCH '23</h1><p>ধনবাড়ী কলেজিয়েট মডেল স্কুল</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-gold btn-sm" onclick="share()">শেয়ার</button>
+    <button class="btn btn-ghost btn-sm" id="authBtn">লগইন</button>
+  </div>
+  <nav class="menu">
+    <a href="#home">হোম</a>
+    <a href="#directory">ব্যাচমেট</a>
+    <a href="#halloffame">কৃতিত্ব</a>
+    <a href="#gallery">গ্যালারি</a>
+    <a href="#stories">স্মৃতিচারণ</a>
+    <a href="#blood">রক্তদান</a>
+    <a href="#reunion">রিইউনিয়ন</a>
+    <a href="#admin" id="adminLink" class="hidden">অ্যাডমিন</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="home" class="hero" style="border:0">
+  <div class="container">
+    <div class="logo">DCMS<br>'23</div>
+    <span class="sec-tag">🎓 ধনবাড়ী কলেজিয়েট মডেল স্কুল • টাঙ্গাইল</span>
+    <h2>Meet Our <span>DCMS Batch '23</span> Family</h2>
+    <p class="quote" id="quote"></p>
+    <div class="stats">
+      <div class="stat"><b id="sTotal">0</b><small>মোট ব্যাচমেট</small></div>
+      <div class="stat"><b id="sBlood">0</b><small>রক্তদাতা</small></div>
+      <div class="stat"><b id="sGroups">0</b><small>বিভাগ</small></div>
+      <div class="stat"><b id="sDays">0</b><small>রিইউনিয়নের বাকি দিন</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTORY -->
+<section id="directory"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Batch Directory</span><h2>ব্যাচমেট ডিরেক্টরি</h2><p>নাম, গ্রুপ বা রক্তের গ্রুপ দিয়ে খুঁজুন</p></div>
+  <div class="card" style="margin-bottom:14px"><b>Registered Batchmates (<span id="dirCount">0</span>)</b></div>
+  <input id="search" placeholder="নাম, ফোন বা শহর দিয়ে খুঁজুন..." oninput="renderDirectory()">
+  <div class="row">
+    <select id="gFilter" data-opt="groups" data-first="সব গ্রুপ" onchange="renderDirectory()"></select>
+    <select id="bFilter" data-opt="blood" data-first="সব রক্তের গ্রুপ" onchange="renderDirectory()"></select>
+  </div>
+  <div class="grid" id="memberList"></div>
+</div></section>
+
+<!-- HALL OF FAME -->
+<section id="halloffame"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Hall of Fame</span><h2>ব্যাচের কৃতিত্ব</h2><p>আমাদের ব্যাচমেটদের সাফল্যের গল্প</p></div>
+  <div class="filters" id="achFilters"></div>
+  <div class="grid" id="achList"></div>
+</div></section>
+
+<!-- GALLERY -->
+<section id="gallery"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Photo Memories</span><h2>স্মৃতির অ্যালবাম</h2></div>
+  <div class="grid" id="galList" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
+</div></section>
+
+<!-- STORIES -->
+<section id="stories"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Campus Stories</span><h2>স্মৃতিচারণ</h2><p>স্কুলের দিনগুলোর গল্প শেয়ার করুন</p></div>
+  <div style="text-align:center;margin-bottom:22px"><button class="btn btn-gold" onclick="shareStory()">✍️ আপনার গল্প শেয়ার করুন</button></div>
+  <div class="grid" id="storyList" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))"></div>
+</div></section>
+
+<!-- BLOOD BANK -->
+<section id="blood"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Blood Bank</span><h2>জীবন বাঁচাতে রক্তদান</h2><p>প্রয়োজনে রক্তদাতা খুঁজে নিন</p></div>
+  <div class="filters" id="bloodFilters"></div>
+  <div class="grid" id="donorList"></div>
+</div></section>
+
+<!-- REUNION -->
+<section id="reunion"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Grand Reunion</span><h2 id="reunionTitle"></h2><p id="reunionSub"></p></div>
+  <div class="cd">
+    <div><b id="cdD">0</b><small>দিন</small></div>
+    <div><b id="cdH">00</b><small>ঘণ্টা</small></div>
+    <div><b id="cdM">00</b><small>মিনিট</small></div>
+    <div><b id="cdS">00</b><small>সেকেন্ড</small></div>
+  </div>
+  <div class="card" style="max-width:640px;margin:auto">
+    <h3 style="color:var(--gold)">রিইউনিয়ন রেজিস্ট্রেশন ফর্ম</h3>
+    <p class="muted">সঠিক তথ্য দিন</p>
+    <form id="reunionForm">
+      <label>পূর্ণ নাম *</label><input name="name" required>
+      <label>গ্রুপ *</label><select name="group" required data-opt="groups" data-first="গ্রুপ নির্বাচন করুন"></select>
+      <label>টি-শার্ট সাইজ *</label><select name="tshirt" required data-opt="tshirts" data-first="সাইজ নির্বাচন করুন"></select>
+      <label>ফোন নম্বর *</label><input name="phone" placeholder="017XXXXXXXX" required>
+      <label>ইমেইল</label><input name="email" type="email">
+      <label>বর্তমান ঠিকানা</label><input name="address">
+      <label>অতিথি সংখ্যা</label><select name="guests" data-opt="guests"></select>
+      <label>বার্তা</label><textarea name="msg" rows="2"></textarea>
+      <label>প্রমো কোড <small>(ঐচ্ছিক)</small></label><input name="promo">
+      <button class="btn btn-gold" style="width:100%;margin-top:18px">Complete Registration</button>
+    </form>
+    <p class="muted" id="regMsg" style="margin-top:12px"></p>
+  </div>
+</div></section>
+
+<!-- ADMIN -->
+<section id="admin" class="hidden"><div class="container">
+  <div class="sec-head"><span class="sec-tag">Admin</span><h2>অ্যাডমিন প্যানেল</h2></div>
+  <div class="stats" style="margin-top:0">
+    <div class="stat"><b id="aUsers">0</b><small>নিবন্ধিত সদস্য</small></div>
+    <div class="stat"><b id="aReg">0</b><small>রিইউনিয়ন রেজিস্ট্রেশন</small></div>
+  </div>
+  <div class="row" style="margin:18px 0">
+    <button class="btn btn-gold btn-sm" onclick="exportCSV()">CSV ডাউনলোড</button>
+    <button class="btn btn-red btn-sm" onclick="clearReg()">রেজিস্ট্রেশন মুছুন</button>
+  </div>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>নাম</th><th>গ্রুপ</th><th>ফোন</th><th>টি-শার্ট</th><th>প্রমো</th></tr></thead>
+      <tbody id="regTable"></tbody>
+    </table>
+  </div>
+</div></section>
+
+<footer>
+  <div class="logo" style="margin:0 auto 10px">DCMS<br>'23</div>
+  <p>একসাথে পথচলা, অগণিত স্মৃতি, অটুট বন্ধন।</p>
+  <p>ধনবাড়ী, টাঙ্গাইল, ঢাকা বিভাগ, বাংলাদেশ</p>
+  <p class="motto" id="motto"></p>
+  <p id="copy"></p>
+  <p style="margin-top:14px"><a href="#home" class="btn btn-gold btn-sm">↑</a></p>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal"><div class="box">
+  <button class="x" onclick="closeModal('authModal')">×</button>
+  <h3 style="color:var(--gold)">মেম্বার আইডি খুলুন বা প্রবেশ করুন</h3>
+  <p class="muted">মোবাইল নম্বর ও একটি পাসওয়ার্ড দিন।</p>
+  <form id="authForm">
+    <label>মোবাইল নম্বর *</label><input name="phone" placeholder="017XXXXXXXX" required>
+    <label>পাসওয়ার্ড *</label><input name="password" type="password" placeholder="কমপক্ষে ৪ অক্ষর" required>
+    <label>আপনার নাম <small>(ঐচ্ছিক)</small></label><input name="name" placeholder="যেমন: সাকিব আহমেদ">
+    <div class="check">
+      <input type="checkbox" name="hidePhone" id="hp">
+      <div><b>মোবাইল নম্বর সাধারণ সদস্যদের কাছে গোপন রাখুন</b><br><small class="muted">টিক দিলে সাধারণ সদস্যরা নম্বর দেখতে পাবে না</small></div>
+    </div>
+    <button class="btn btn-gold" style="width:100%;margin-top:18px">প্রবেশ করুন / আইডি খুলুন</button>
+  </form>
+  <p style="text-align:center;margin-top:14px"><a href="#" id="adminLoginLink" class="muted">অ্যাডমিন প্যানেল দিয়ে প্রবেশ</a></p>
+</div></div>
+
+<!-- PROFILE MODAL -->
+<div class="modal" id="profileModal"><div class="box">
+  <button class="x" onclick="closeModal('profileModal')">×</button>
+  <h3 style="color:var(--gold)">প্রোফাইল এডিট</h3>
+  <form id="profileForm">
+    <label>নাম *</label><input name="name" required>
+    <label>গ্রুপ</label><select name="group" data-opt="groups" data-first="গ্রুপ নির্বাচন করুন"></select>
+    <label>রক্তের গ্রুপ</label><select name="bloodGroup" data-opt="blood" data-first="নির্বাচন করুন"></select>
+    <label>বর্তমান শহর</label><input name="city">
+    <div class="check">
+      <input type="checkbox" name="hidePhone" id="hp2">
+      <div><b>মোবাইল নম্বর গোপন রাখুন</b></div>
+    </div>
+    <button class="btn btn-gold" style="width:100%;margin-top:18px">সেভ করুন</button>
+  </form>
+  <button class="btn btn-red" style="width:100%;margin-top:10px" onclick="logout()">লগআউট</button>
+</div></div>
+
+<!-- STORY MODAL -->
+<div class="modal" id="storyModal"><div class="box">
+  <button class="x" onclick="closeModal('storyModal')">×</button>
+  <h3 style="color:var(--gold)">আপনার স্মৃতি শেয়ার করুন</h3>
+  <form id="storyForm">
+    <label>শিরোনাম *</label><input name="title" required>
+    <label>গল্প *</label><textarea name="text" rows="5" required></textarea>
+    <button class="btn btn-gold" style="width:100%;margin-top:16px">প্রকাশ করুন</button>
+  </form>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================== কনফিগ: এখানে আপনার তথ্য বদলান ================== */
+const CONFIG = {
+  quote: "ধনবাড়ীর ঐতিহ্যবাহী স্কুলের প্রাঙ্গণ থেকে শুরু হওয়া ব্যাচ '২৩ — বন্ধুত্বের এই বন্ধন থাকুক চিরকাল।",
+  motto: "One Batch, One Bond, One Legacy ❤️",
+  reunionTitle: "Grand Reunion 2026",
+  reunionText: "২৬ ডিসেম্বর ২০২৬, সকাল ১০টা থেকে",
+  reunionDate: "2026-12-26T10:00:00+06:00",
+  adminPassword: "admin123", // ⚠️ অবশ্যই পরিবর্তন করুন
+  groups: ["Science", "Business Studies", "Humanities"],
+  blood: [],
+  tshirts: ["S", "M", "L", "XL", "XXL"],
+  bloodGroups: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  // শেয়ার্ড সদস্য তালিকা (সবাই দেখতে পাবে) — নমুনা মুছে আসল তথ্য দিন
+  members: [
+    { name: "উদাহরণ সদস্য ১", phone: "01700000001", group: "Science", bloodGroup: "O+", city: "ঢাকা", hidePhone: false },
+    { name: "উদাহরণ সদস্য ২", phone: "01700000002", group: "Humanities", bloodGroup: "B+", city: "টাঙ্গাইল", hidePhone: true }
+  ],
+  // কৃতিত্ব — নমুনা মুছে আসল তথ্য দিন
+  achievements: [
+    { name: "উদাহরণ নাম", title: "বুয়েটে ভর্তি", category: "Engineering", year: 2025 },
+    { name: "উদাহরণ নাম", title: "ঢাকা মেডিকেলে ভর্তি", category: "Medical", year: 2025 },
+    { name: "উদাহরণ নাম", title: "বিতর্ক প্রতিযোগিতায় প্রথম", category: "Debate & Leadership", year: 2024 }
+  ],
+  // গ্যালারি — src এ ছবির লিংক দিন (খালি রাখলে প্লেসহোল্ডার দেখাবে)
+  gallery: [
+    { src: "", caption: "ক্যাম্পাসের প্রথম দিন" },
+    { src: "", caption: "বার্ষিক অনুষ্ঠান" },
+    { src: "", caption: "বন্ধুদের আড্ডা" }
+  ]
+};
+/* ==================================================================== */
+
+/* ---------- Storage helpers ---------- */
+const $ = s => document.querySelector(s);
+const get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const put = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const PHONE_RE = /^01[3-9]\d{8}$/;
+
+let users   = get('dcms_users', []);   // এই ব্রাউজারে নিবন্ধিত সদস্য
+let me      = get('dcms_me', null);    // লগইন করা ফোন নম্বর, অথবা 'admin'
+let reg     = get('dcms_reg', []);     // রিইউনিয়ন রেজিস্ট্রেশন
+let stories = get('dcms_stories', []); // স্মৃতিচারণ
+let donorBlood = 'সব', achCat = 'সব';
+
+const allMembers = () => [...CONFIG.members, ...users];
+const currentUser = () => me === 'admin' ? { name: 'অ্যাডমিন', admin: true } : (users.find(u => u.phone === me) || null);
+const canSeePhone = m => me === 'admin' || (!!me && (!m.hidePhone || m.phone === me));
+
+/* ---------- UI helpers ---------- */
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2500);
+}
+function openModal(id) { $('#' + id).classList.add('open'); }
+function closeModal(id) { $('#' + id).classList.remove('open'); }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+function chips(el, items, cur, fn) {
+  el.innerHTML = items.map(i => `<button class="chip ${i === cur ? 'on' : ''}" data-v="${esc(i)}">${esc(i)}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(b => b.onclick = () => fn(b.dataset.v));
+}
+function renderFilters() {
+  chips($('#achFilters'), ['সব', ...new Set(CONFIG.achievements.map(a => a.category))], achCat,
+    v => { achCat = v; renderAch(); renderFilters(); });
+  chips($('#bloodFilters'), ['সব', ...CONFIG.bloodGroups], donorBlood,
+    v => { donorBlood = v; renderDonors(); renderFilters(); });
+}
+
+/* ---------- Render: stats & directory ---------- */
+function renderStats() {
+  const all = allMembers();
+  $('#sTotal').textContent = all.length;
+  $('#sBlood').textContent = all.filter(m => m.bloodGroup).length;
+  $('#sGroups').textContent = CONFIG.groups.length;
+}
+function renderDirectory() {
+  const all = allMembers();
+  const q = $('#search').value.trim().toLowerCase();
+  const g = $('#gFilter').value, b = $('#bFilter').value;
+  const list = all.filter(u =>
+    (!q || [u.name, u.phone, u.city, u.group].some(x => (x || '').toLowerCase().includes(q))) &&
+    (!g || u.group === g) && (!b || u.bloodGroup === b));
+  $('#dirCount').textContent = all.length;
+  $('#memberList').innerHTML = list.length ? list.map(u => `
+    <div class="card member">
+      <div class="avatar">${esc((u.name || '?')[0])}</div>
+      <div style="flex:1;min-width:0">
+        <b>${esc(u.name || 'নামহীন')}</b> ${u.bloodGroup ? `<span class="blood">${esc(u.bloodGroup)}</span>` : ''}<br>
+        <span class="muted">${esc(u.group || 'গ্রুপ উল্লেখ নেই')} ${u.city ? '• ' + esc(u.city) : ''}</span><br>
+        ${canSeePhone(u) ? `<a href="tel:${esc(u.phone)}">📞 ${esc(u.phone)}</a>` : '<span class="muted">🔒 নম্বর গোপন</span>'}
+      </div>
+    </div>`).join('') : `<div class="empty">কোনো সদস্য পাওয়া যায়নি</div>`;
+}
+
+/* ---------- Render: achievements, gallery, stories, donors ---------- */
+function renderAch() {
+  const list = CONFIG.achievements.filter(a => achCat === 'সব' || a.category === achCat);
+  $('#achList').innerHTML = list.map(a => `
+    <div class="card">
+      <span class="badge">${esc(a.category)}</span>
+      <h3 style="margin:10px 0 4px;color:var(--gold)">${esc(a.name)}</h3>
+      <p>${esc(a.title)}</p>
+      <p class="muted">${esc(a.year || '')}</p>
+    </div>`).join('') || '<div class="empty">এখনো কোনো কৃতিত্ব যোগ করা হয়নি</div>';
+}
+function renderGallery() {
+  $('#galList').innerHTML = CONFIG.gallery.map(g => `
+    <div class="gal">${g.src ? `<img src="${esc(g.src)}" alt="">` : '<div class="ph">📷</div>'}
+      <div class="cap">${esc(g.caption)}</div></div>`).join('') || '<div class="empty">ছবি যোগ করা হয়নি</div>';
+}
+function renderStories() {
+  $('#storyList').innerHTML = stories.map(s => `
+    <div class="card">
+      <h3 style="color:var(--gold);margin-bottom:6px">${esc(s.title)}</h3>
+      <p style="white-space:pre-wrap">${esc(s.text)}</p>
+      <p class="muted" style="margin-top:10px">— ${esc(s.author)} • ${esc(s.date)}</p>
+    </div>`).join('') || '<div class="empty">এখনো কোনো গল্প শেয়ার করা হয়নি</div>';
+}
+function renderDonors() {
+  const list = allMembers().filter(m => m.bloodGroup && (donorBlood === 'সব' || m.bloodGroup === donorBlood));
+  $('#donorList').innerHTML = list.map(m => `
+    <div class="card member">
+      <div class="avatar" style="color:#ff6b81;border-color:#ff6b81">${esc(m.bloodGroup)}</div>
+      <div style="flex:1;min-width:0">
+        <b>${esc(m.name)}</b><br>
+        <span class="muted">${esc(m.group || '')} ${m.city ? '• ' + esc(m.city) : ''}</span><br>
+        ${canSeePhone(m) ? `<a href="tel:${esc(m.phone)}">📞 ${esc(m.phone)}</a>` : '<span class="muted">🔒 লগইন করলে নম্বর দেখা যাবে</span>'}
+      </div>
+    </div>`).join('') || '<div class="empty">এই গ্রুপের রক্তদাতা পাওয়া যায়নি</div>';
+}
+
+/* ---------- Auth ---------- */
+function renderAuth() {
+  const u = currentUser();
+  const btn = $('#authBtn');
+  btn.textContent = u ? (u.admin ? 'অ্যাডমিন' : u.name.split(' ')[0]) : 'লগইন';
+  btn.onclick = u ? openProfile : () => openModal('authModal');
+  const isAdm = !!u?.admin;
+  $('#adminLink').classList.toggle('hidden', !isAdm);
+  $('#admin').classList.toggle('hidden', !isAdm);
+  if (isAdm) renderAdmin();
+}
+function openProfile() {
+  const u = currentUser();
+  if (!u) return openModal('authModal');
+  if (u.admin) { if (confirm('অ্যাডমিন থেকে লগআউট করবেন?')) logout(); return; }
+  const f = $('#profileForm');
+  const vals = { name: u.name || '', group: u.group || '', bloodGroup: u.bloodGroup || '', city: u.city || '', hidePhone: !!u.hidePhone };
+  for (const [k, v] of Object.entries(vals)) {
+    const el = f.querySelector(`[name="${k}"]`);
+    if (el.type === 'checkbox') el.checked = v; else el.value = v;
+  }
+  openModal('profileModal');
+}
+function logout() {
+  me = null; localStorage.removeItem('dcms_me');
+  closeModal('profileModal');
+  renderAuth(); renderDirectory(); renderDonors();
+  toast('লগআউট হয়েছে');
+}
+function adminLogin() {
+  const p = prompt('অ্যাডমিন পাসওয়ার্ড দিন');
+  if (p === null) return;
+  if (p !== CONFIG.adminPassword) return toast('ভুল পাসওয়ার্ড');
+  me = 'admin'; put('dcms_me', me);
+  closeModal('authModal'); renderAuth(); renderDirectory(); renderDonors();
+  toast('অ্যাডমিন হিসেবে প্রবেশ করা হয়েছে');
+  location.hash = '#admin';
+}
+
+/* ---------- Share story ---------- */
+function shareStory() {
+  if (!me) { toast('গল্প শেয়ার করতে আগে লগইন করুন'); return openModal('authModal'); }
+  openModal('storyModal');
+}
+
+/* ---------- Reunion countdown ---------- */
+function tick() {
+  const d = Math.max(0, new Date(CONFIG.reunionDate) - new Date());
+  const days = Math.floor(d / 864e5);
+  $('#cdD').textContent = days;
+  $('#cdH').textContent = pad(Math.floor(d / 36e5) % 24);
+  $('#cdM').textContent = pad(Math.floor(d / 6e4) % 60);
+  $('#cdS').textContent = pad(Math.floor(d / 1e3) % 60);
+  $('#sDays').textContent = days;
+}
+
+/* ---------- Admin ---------- */
+function renderAdmin() {
+  $('#aUsers').textContent = users.length;
+  $('#aReg').textContent = reg.length;
+  $('#regTable').innerHTML = reg.map(r => `
+    <tr><td>${esc(r.name)}</td><td>${esc(r.group)}</td><td>${esc(r.phone)}</td><td>${esc(r.tshirt)}</td><td>${esc(r.promo)}</td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted">এখনো কোনো রেজিস্ট্রেশন নেই</td></tr>';
+}
+function exportCSV() {
+  const head = ['name','group','phone','tshirt','guests','email','address','promo','message','time'];
+  const rows = [head, ...reg.map(r => [r.name, r.group, r.phone, r.tshirt, r.guests, r.email, r.address, r.promo, r.msg, r.at])];
+  const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'reunion-registrations.csv';
+  a.click();
+}
+function clearReg() {
+  if (!confirm('সব রেজিস্ট্রেশন মুছে যাবে। নিশ্চিত?')) return;
+  reg = []; put('dcms_reg', reg); renderAdmin();
+}
+
+/* ---------- Share ---------- */
+async function share() {
+  const data = { title: "DCMS Batch '23", text: "DCMS Batch '23 ওয়েবসাইট", url: location.href };
+  if (navigator.share) { try { await navigator.share(data); } catch {} }
+  else { navigator.clipboard.writeText(location.href); toast('লিংক কপি হয়েছে'); }
+}
+
+/* ---------- Form handlers ---------- */
+$('#authForm').onsubmit = e => {
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target));
+  const phone = f.phone.trim();
+  if (!PHONE_RE.test(phone)) return toast('সঠিক মোবাইল নম্বর দিন');
+  let u = users.find(x => x.phone === phone);
+  if (u) {
+    if (u.password !== f.password) return toast('পাসওয়ার্ড ভুল');
+    if (f.name) u.name = f.name.trim();
+  } else {
+    if (!f.password || f.password.length < 4) return toast('পাসওয়ার্ড কমপক্ষে ৪ অক্ষর হতে হবে');
+    u = { phone, password: f.password, name: (f.name || 'নামহীন').trim(), group: '', bloodGroup: '', city: '', hidePhone: !!f.hidePhone };
+    users.push(u);
+  }
+  put('dcms_users', users);
+  me = phone; put('dcms_me', me);
+  e.target.reset();
+  closeModal('authModal');
+  renderAuth(); renderStats(); renderDirectory(); renderDonors();
+  toast('স্বাগতম, ' + u.name);
+  if (!u.group) setTimeout(openProfile, 300); // প্রোফাইল অসম্পূর্ণ হলে এডিট খুলবে
+};
+
+$('#profileForm').onsubmit = e => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  const u = currentUser();
+  Object.assign(u, { name: d.name.trim(), group: d.group, bloodGroup: d.bloodGroup, city: (d.city || '').trim(), hidePhone: !!d.hidePhone });
+  put('dcms_users', users);
+  closeModal('profileModal');
+  renderAuth(); renderStats(); renderDirectory(); renderDonors();
+  toast('প্রোফাইল আপডেট হয়েছে');
+};
+
+$('#storyForm').onsubmit = e => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  stories.unshift({ title: d.title.trim(), text: d.text.trim(), author: currentUser()?.name || 'অজ্ঞাত', date: new Date().toLocaleDateString('bn-BD') });
+  put('dcms_stories', stories);
+  e.target.reset(); closeModal('storyModal'); renderStories();
+  toast('আপনার গল্প প্রকাশিত হয়েছে');
+};
+
+$('#reunionForm').onsubmit = e => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  if (!PHONE_RE.test(d.phone.trim())) return toast('সঠিক ফোন নম্বর দিন');
+  reg.push({ ...d, at: new Date().toISOString() });
+  put('dcms_reg', reg);
+  e.target.reset();
+  $('#regMsg').innerHTML = '✅ রেজিস্ট্রেশন সম্পন্ন হয়েছে! আপনার তথ্য সংরক্ষিত হয়েছে।';
+  renderAdmin();
+};
+
+$('#adminLoginLink').onclick = e => { e.preventDefault(); adminLogin(); };
+
+/* ---------- Init ---------- */
+function init() {
+  $('#quote').textContent = CONFIG.quote;
+  $('#reunionTitle').textContent = CONFIG.reunionTitle;
+  $('#reunionSub').textContent = CONFIG.reunionText;
+  $('#motto').textContent = CONFIG.motto;
+  $('#copy').textContent = `© ${new Date().getFullYear()} DCMS Batch '23. ধনবাড়ী কলেজিয়েট মডেল স্কুল, টাঙ্গাইল। সর্বস্বত্ব সংরক্ষিত।`;
+
+  // ড্রপডাউন অপশন বসানো
+  const lists = { groups: CONFIG.groups, blood: CONFIG.bloodGroups, tshirts: CONFIG.tshirts, guests: ['0','1','2','3'] };
+  document.querySelectorAll('select[data-opt]').forEach(s => {
+    const first = s.dataset.first ? `<option value="">${s.dataset.first}</option>` : '';
+    s.innerHTML = first + lists[s.dataset.opt].map(x => `<option>${esc(x)}</option>`).join('');
+  });
+
+  renderAuth();
+  renderStats();
+  renderFilters();
+  renderDirectory();
+  renderAch();
+  renderGallery();
+  renderStories();
+  renderDonors();
+  tick();
+  setInterval(tick, 1000);
+}
+init();
+</script>
+</body>
+</html>
